@@ -1,6 +1,6 @@
-(ns utils.docker
+(ns utils.providers.docker
   (:require
-   [utils.general :refer [generic-transform deep-merge new-resource component-factory resource-factory deploy-stack-factory iterate-stack]]
+   [utils.execution.general :refer [generic-transform deep-merge new-resource component-factory resource-factory deploy-stack-factory iterate-stack]]
    ["@pulumi/docker-build" :as docker]
    ["path" :as path]
    [configs :refer [cfg]]))

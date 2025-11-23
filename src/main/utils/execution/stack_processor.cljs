@@ -1,4 +1,4 @@
-(ns utils.stack-processor
+(ns utils.execution.stack-processor
   (:require
    ["@pulumi/kubernetes" :as k8s]
    ["@local/crds/gateway" :as gateway-api]
@@ -6,28 +6,20 @@
    ["@pulumi/pulumi" :as pulumi]
    ["@pulumi/vault" :as vault]
    ["@pulumiverse/harbor" :as harbor]
-   [utils.defaults :as default]
-   [utils.vault :as vault-utils]
-   [utils.general :refer [deep-merge new-resource resource-factory deploy-stack-factory iterate-stack]]
+   [utils.providers.defaults :as default]
+   [utils.providers.vault :as vault-utils]
+   [utils.execution.general :refer [deep-merge new-resource resource-factory deploy-stack-factory iterate-stack]]
    ["@pulumi/docker" :as docker]
    ["@pulumi/docker-build" :as docker-build]
    [clojure.walk :as walk]
    [clojure.string :as str]
    ["path" :as path]
    [configs :refer [cfg]]
-   [utils.k8s :as k8s-utils]
-   [utils.harbor :as harbor-utils]
-   [utils.docker :as docker-utils]
-   [utils.safe-fns :refer [safe-fns]])
-  (:require-macros [utils.general :refer [p-> build-registry]]))
-
-
-#_(def component-specs-defs
-  {:k8s k8s-utils/component-specs-defs
-   :harbor harbor-utils/component-specs-defs
-   :docker docker-utils/component-specs-defs})
-
-#_(def component-specs (build-registry component-specs-defs))
+   [utils.providers.k8s :as k8s-utils]
+   [utils.providers.harbor :as harbor-utils]
+   [utils.providers.docker :as docker-utils]
+   [utils.execution.safe-fns :refer [safe-fns]])
+  (:require-macros [utils.execution.general :refer [p-> build-registry]]))
 
 (defn safe-parse-int [s]
   (let [n (js/parseInt s 10)]
@@ -382,25 +374,23 @@
          stack-items)]
     (:resources-map result)))
 
-(defn deploy! [{:keys [pulumi-cfg resource-configs all-providers]}]
-  (let [
 
-        deployment-results
+(defn deploy! [{:keys [pulumi-cfg resource-configs all-providers]}]
+  (let [deployment-results
         (into
          {}
          (for [config resource-configs]
-           (let [
-                 {:keys [stack app-name]} config
+           (let [{:keys [stack app-name]} config
                  _ (when (nil? config)
                      (throw (js/Error. "Resource configs contain a nil value!")))
 
                  common-opts (merge
                               all-providers
                               (select-keys config [:app-name :app-namespace])
-                              {:pulumi-cfg pulumi-cfg})
-                 ]
+                              {:pulumi-cfg pulumi-cfg})]
 
-             [app-name (process-stack stack config common-opts)])))
-         ]
+             [app-name (process-stack stack config common-opts)])))]
     (clj->js deployment-results)))
+
+
 

@@ -1,4 +1,4 @@
-(ns utils.safe-fns)
+(ns utils.execution.safe-fns)
 
 (defn make-paths [& path-groups]
   (mapcat (fn [{:keys [paths backend]}]

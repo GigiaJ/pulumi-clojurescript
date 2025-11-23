@@ -1,4 +1,4 @@
-(ns utils.general (:require [clojure.walk :as walk]))
+(ns utils.execution.general (:require [clojure.walk :as walk]))
 
 
 (defn new-resource [resource-type resource-name final-args provider dependencies]

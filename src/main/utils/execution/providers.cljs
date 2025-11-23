@@ -1,12 +1,12 @@
-(ns utils.providers
+(ns utils.execution.providers
   (:require
    ["@pulumi/pulumi" :as pulumi] ["@pulumi/vault" :as vault] ["@pulumiverse/harbor" :as harbor] ["@pulumi/kubernetes" :as k8s]
    [clojure.string :as str] [clojure.walk :as walk]
-   [utils.general :refer [resolve-template]]
-   [utils.k8s :as k8s-utils]
-   [utils.harbor :as harbor-utils]
-   [utils.docker :as docker-utils] [utils.vault :as vault-utils]
-   [utils.stack-processor :refer [deploy! component-specs]]))
+   [utils.execution.general :refer [resolve-template]]
+   [utils.providers.k8s :as k8s-utils]
+   [utils.providers.harbor :as harbor-utils]
+   [utils.providers.docker :as docker-utils] [utils.providers.vault :as vault-utils]
+   [utils.execution.stack-processor :refer [deploy! component-specs]]))
 
 (defn resolve-provider-template [constructor name config]
   {:constructor constructor
@@ -18,19 +18,6 @@
                 {:vault vault-utils/provider-template
                  :harbor harbor-utils/provider-template
                  :k8s k8s-utils/provider-template})))
-
-(defn get-provider-outputs-config []
-  {:vault  {:stack :init
-            :outputs ["vaultAddress" "vaultToken"]}
-   :harbor {:stack :shared
-            :outputs ["username" "password" "url"]}
-   :k8s   {:stack :init
-           :outputs ["kubeconfig"]}})
-
-
-#_(defn get-stack-refs []
-  {:init (new pulumi/StackReference "init") 
-   :shared (new pulumi/StackReference "shared")})
 
 (defn get-stack-refs [stack-ref-array]
   (into {}
@@ -133,3 +120,11 @@
                       :resource-configs (:resource-configs stack-resources-definition)
                       :all-providers instantiated-providers
                       :pre-deploy-deps pre-deploy-results})))))))))
+
+
+(defn execute [configs exports]
+  (->
+   (let [pulumi-cfg (pulumi/Config.)]
+     (provider-apply pulumi-cfg configs))
+   (exports)
+   (clj->js)))
