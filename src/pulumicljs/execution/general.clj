@@ -1,4 +1,4 @@
-(ns execution.general
+(ns pulumicljs.execution.general
   (:require
    [clojure.walk]))
 

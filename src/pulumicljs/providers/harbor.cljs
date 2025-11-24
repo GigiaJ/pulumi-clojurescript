@@ -1,4 +1,4 @@
-(ns providers.harbor
+(ns pulumicljs.providers.harbor
   (:require
    ["@pulumiverse/harbor" :as harbor]))
 
