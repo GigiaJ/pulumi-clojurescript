@@ -1,4 +1,4 @@
-(ns utils.execution.general
+(ns execution.general
   (:require
    [clojure.walk]))
 

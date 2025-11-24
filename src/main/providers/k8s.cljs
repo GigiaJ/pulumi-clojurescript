@@ -1,4 +1,4 @@
-(ns utils.providers.k8s (:require ["@pulumi/kubernetes" :as k8s]))
+(ns providers.k8s (:require ["@pulumi/kubernetes" :as k8s]))
 
 
 

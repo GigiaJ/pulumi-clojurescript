@@ -1,12 +1,12 @@
-(ns utils.execution.providers
+(ns execution.providers
   (:require
    ["@pulumi/pulumi" :as pulumi] ["@pulumi/vault" :as vault] ["@pulumiverse/harbor" :as harbor] ["@pulumi/kubernetes" :as k8s]
    [clojure.string :as str] [clojure.walk :as walk]
-   [utils.execution.general :refer [resolve-template]]
-   [utils.providers.k8s :as k8s-utils]
-   [utils.providers.harbor :as harbor-utils]
-   [utils.providers.docker :as docker-utils] [utils.providers.vault :as vault-utils]
-   [utils.execution.stack-processor :refer [deploy! component-specs]]))
+   [execution.general :refer [resolve-template]]
+   [providers.k8s :as k8s-utils]
+   [providers.harbor :as harbor-utils]
+   [providers.docker :as docker-utils] [providers.vault :as vault-utils]
+   [execution.stack-processor :refer [deploy! component-specs]]))
 
 (defn resolve-provider-template [constructor name config]
   {:constructor constructor

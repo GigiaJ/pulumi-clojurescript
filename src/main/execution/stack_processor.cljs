@@ -1,4 +1,4 @@
-(ns utils.execution.stack-processor
+(ns execution.stack-processor
   (:require
    ["@pulumi/kubernetes" :as k8s]
    ["@local/crds/gateway" :as gateway-api]
@@ -6,20 +6,20 @@
    ["@pulumi/pulumi" :as pulumi]
    ["@pulumi/vault" :as vault]
    ["@pulumiverse/harbor" :as harbor]
-   [utils.providers.defaults :as default]
-   [utils.providers.vault :as vault-utils]
-   [utils.execution.general :refer [deep-merge new-resource resource-factory deploy-stack-factory iterate-stack]]
+   [providers.defaults :as default]
+   [providers.vault :as vault-utils]
+   [execution.general :refer [deep-merge new-resource resource-factory deploy-stack-factory iterate-stack]]
    ["@pulumi/docker" :as docker]
    ["@pulumi/docker-build" :as docker-build]
    [clojure.walk :as walk]
    [clojure.string :as str]
    ["path" :as path]
    [configs :refer [cfg]]
-   [utils.providers.k8s :as k8s-utils]
-   [utils.providers.harbor :as harbor-utils]
-   [utils.providers.docker :as docker-utils]
-   [utils.execution.safe-fns :refer [safe-fns]])
-  (:require-macros [utils.execution.general :refer [p-> build-registry]]))
+   [providers.k8s :as k8s-utils]
+   [providers.harbor :as harbor-utils]
+   [providers.docker :as docker-utils]
+   [execution.safe-fns :refer [safe-fns]])
+  (:require-macros [execution.general :refer [p-> build-registry]]))
 
 (defn safe-parse-int [s]
   (let [n (js/parseInt s 10)]
