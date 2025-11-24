@@ -122,9 +122,9 @@
                       :pre-deploy-deps pre-deploy-results})))))))))
 
 
-(defn execute [configs exports]
+(defn execute [stack-resources-definition exports]
   (->
    (let [pulumi-cfg (pulumi/Config.)]
-     (provider-apply pulumi-cfg configs))
+     (provider-apply stack-resources-definition pulumi-cfg))
    (exports)
    (clj->js)))
