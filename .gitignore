@@ -1,0 +1,13 @@
+/bin/
+/node_modules/
+/.shadow-cljs/
+.env
+/core/.shadow-cljs/
+/app-services/.shadow-cljs/
+/out/
+/core/.clj-kondo/
+/generated/
+.env
+init-secrets.json
+.crd2pulumi-checksum
+/.clj-kondo/
