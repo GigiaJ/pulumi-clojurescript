@@ -1,8 +1,8 @@
 (ns pulumicljs.execution.stack-processor
   (:require
    ["@pulumi/kubernetes" :as k8s]
-   ["@local/crds/gateway" :as gateway-api]
-   ["@local/crds/cert_manager" :as cert-manager]
+   ["pulumi-extra-crds/gateway" :as gateway-api]
+   ["pulumi-extra-crds/cert_manager" :as cert-manager]
    ["@pulumi/pulumi" :as pulumi]
    ["@pulumi/vault" :as vault]
    ["@pulumiverse/harbor" :as harbor]
