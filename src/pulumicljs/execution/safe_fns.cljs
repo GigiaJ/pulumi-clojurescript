@@ -1,4 +1,5 @@
-(ns pulumicljs.execution.safe-fns)
+(ns pulumicljs.execution.safe-fns
+  (:require [clojure.string :as str]))
 
 (defn make-paths [& path-groups]
   (mapcat (fn [{:keys [paths backend]}]
@@ -17,7 +18,7 @@
     (vec
      (mapcat
       (fn [domain]
-        (let [clean-name (clojure.string/replace domain #"\." "-")
+        (let [clean-name (str/replace domain #"\." "-")
               secret-name (str clean-name "-tls")]
 
           [{:name (str "https-root-" clean-name)
