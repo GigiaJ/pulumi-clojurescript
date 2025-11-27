@@ -111,6 +111,10 @@
    :k8s:config-map {:constructor (.. k8s -core -v1 -ConfigMap)
                     :provider-key :k8s
                     :defaults-fn (fn [env] ((get-in default/defaults [:k8s :config-map]) (:options env)))}
+   
+   :k8s:config-file {:constructor (.. k8s -yaml -v2 -ConfigFile)
+                    :provider-key :k8s
+                    :defaults-fn (fn [env] ((get-in default/defaults [:k8s :config-file]) (:options env)))}
 
    :k8s:deployment {:constructor (.. k8s -apps -v1 -Deployment)
                     :provider-key :k8s
@@ -124,7 +128,7 @@
                  :provider-key :k8s
                  :defaults-fn (fn [env] ((get-in default/defaults [:k8s :ingress]) (:options env)))}
 
-   :k8s:chart {:constructor (.. k8s -helm -v3 -Chart)
+   :k8s:chart {:constructor (.. k8s -helm -v4 -Chart)
                :provider-key :k8s
                :defaults-fn (fn [env]
                               (deep-merge ((get-in default/defaults [:k8s :chart]) (:options env))
@@ -141,6 +145,10 @@
    :k8s:gateway {:constructor (.. gateway-api -v1 -Gateway)
                  :provider-key :k8s
                  :defaults-fn (fn [env] ((get-in default/defaults [:k8s :gateway]) (:options env)))}
+   
+   :k8s:gateway-class {:constructor (.. gateway-api -v1 -GatewayClass)
+                       :provider-key :k8s
+                       :defaults-fn (fn [env] ((get-in default/defaults [:k8s :gateway-class]) (:options env)))}
 
    :k8s:httproute {:constructor (.. gateway-api -v1 -HTTPRoute)
                    :provider-key :k8s
