@@ -35,18 +35,24 @@
   {:apiVersion "gateway.networking.k8s.io/v1"
    :kind "Gateway"
    :metadata {:name "main-gateway"
-              :namespace "traefik"}
-   :spec {:gatewayClassName "traefik"
+              :namespace app-name}
+   :spec {:gatewayClassName app-name
           :listeners
-          [{:name "http"
+          [#_{:name "http"
             :protocol "HTTP"
-            :port 80}
-           {:name "https"
+            :port 8000}
+           #_{:name "https"
             :protocol "HTTPS"
-            :port 443
+            :port 8443
             :tls {:certificateRefs
                   [{:name (str app-name "-cert")
                     :kind "Secret"}]}}]}})
+
+(defn gateway-class [{:keys [app-name]}]
+  {:apiVersion "gateway.networking.k8s.io/v1"
+   :kind "GatewayClass"
+   :metadata {:name app-name}
+   :spec {:controllerName "io.traefik/gateway"}})
 
 
 (defn httproute [{:keys [app-name app-namespace host]}]
@@ -110,14 +116,21 @@
 (defn storage-class [{:keys [app-name]}]
   {:metadata {:name app-name}})
 
+(defn config-file
+  [{:keys [app-name file]}]
+  {:name app-name
+   :properties {:file file}})
+
 (def defaults
   {:ingress       ingress
    :gateway      gateway
+   :gateway-class  gateway-class
    :httproute    httproute
    :certificate certificate
    :cluster-issuer cluster-issuer
    :chart         chart
    :config-map    config-map
+   :config-file config-file
    :service       service
    :deployment    deployment
    :namespace     nspace
