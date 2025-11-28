@@ -68,6 +68,15 @@
                    :backendRefs [{:name app-name
                                   :port 80}]}]}})
 
+(defn pvc [{:keys [app-name app-namespace size storage-class access-mode]}]
+  {:apiVersion "v1"
+   :kind "PersistentVolumeClaim"
+   :metadata {:name (str app-name "-pvc")
+              :namespace app-namespace}
+   :spec {:accessModes [(or access-mode "ReadWriteOnce")]
+          :storageClassName (or storage-class "hcloud-volumes")
+          :resources {:requests {:storage (or size "10Gi")}}}})
+
 (defn ingress [{:keys [app-name app-namespace host]}]
   {:metadata {:name app-name
               :namespace app-namespace}
@@ -135,7 +144,8 @@
    :deployment    deployment
    :namespace     nspace
    :secret        secret
-   :storage-class storage-class})
+   :storage-class storage-class
+   :pvc pvc})
 
 
 (def component-specs-defs
