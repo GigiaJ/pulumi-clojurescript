@@ -130,6 +130,13 @@
   {:name app-name
    :properties {:file file}})
 
+
+(defn csi-driver [{:keys [provisioner-name]}]
+  {:metadata {:name provisioner-name}
+   :spec {:attachRequired false
+          :podInfoOnMount true
+          :volumeLifecycleModes ["Persistent"]}})
+
 (def defaults
   {:ingress       ingress
    :gateway      gateway
@@ -140,6 +147,7 @@
    :chart         chart
    :config-map    config-map
    :config-file config-file
+   :csi-driver csi-driver
    :service       service
    :deployment    deployment
    :namespace     nspace
