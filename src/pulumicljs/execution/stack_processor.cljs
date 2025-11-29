@@ -138,9 +138,13 @@
                        :provider-key :k8s
                        :defaults-fn (fn [env] ((get-in default/defaults [:k8s :storage-class]) (:options env)))}
 
-   :k8s:pvc {:constructor (.. k8s -storage -v1 -PVC)
+   :k8s:pvc {:constructor (.. k8s -core -v1 -PersistentVolumeClaim)
              :provider-key :k8s
              :defaults-fn (fn [env] ((get-in default/defaults [:k8s :pvc]) (:options env)))}
+
+   :k8s:csi-driver {:constructor (.. k8s -storage -v1 -CSIDriver)
+                    :provider-key :k8s
+                    :defaults-fn (fn [env] ((get-in default/defaults [:k8s :csi-driver]) (:options env)))}
 
    :k8s:gateway {:constructor (.. gateway-api -v1 -Gateway)
                  :provider-key :k8s
