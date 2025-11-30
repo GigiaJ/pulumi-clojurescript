@@ -46,4 +46,5 @@
    'println #(js/console.log %)
    'make-paths make-paths
    'make-listeners make-listeners
-   'parse #(js->clj (js/JSON.parse %))})
+   'parse #(js->clj (js/JSON.parse %))
+   'stringify #(js/JSON.stringify (clj->js %))})
