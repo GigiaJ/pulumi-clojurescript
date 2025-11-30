@@ -101,7 +101,7 @@
   {:metadata {:namespace app-namespace
               :name app-name}
    :spec {:selector {:app app-name}
-          :ports [{:port 80 :targetPort image-port}]}})
+          :ports [{:name app-name :port 80 :targetPort image-port}]}})
 
 (defn deployment [{:keys [app-name app-namespace image image-port]}]
   {:metadata {:namespace app-namespace
