@@ -24,22 +24,29 @@ I'll detail more later (check my config README if you're desperate to get this a
 
 
 Future additions needed:
-- Extra CRDs aren't installed by default and currently have no mechanism to install them
-- There *must* be a way to declare duplicate resources in the same config group. Otherwise we create massive bloat without purpose. Config file resources or certificates being individually declarable several times is NOT a bad thing. This would provide greater fluidity. We still need to refine the multi-resource deployment, but certificates is a good start with the direction that should take.
-- Should also revise default-fn to recursively call certificate and just allow the default-fn to unwind the values.
-- Component spec really needs to be moved out of stack_processor as it is just such a large block of data that so better belongs w/ the providers themselves.
-- It may be helpful to redesign the stack mechanism entirely so that resources and such are declared like:
+- The the stack mechanism needs to be redesigned so that resources and such are declared like:
     ```
     (def config
         {:stack [
             {:item-name 
-                {:options-in-here}} 
+                {
+                :resources-options
+                :pulumi-options
+                }} 
             {:item-name-2 
-                {:options-in-here}}
+                {
+                :resources-options
+                :pulumi-options
+                }}
         ]})
     ```
     Where this provides much clearer association and each resource has its options readily available. As such you could declare duplicate keys in the same config. It would make resource associations much more explicit and cleaner written.
-    It would require a decent amount of revision, so no rush on this.
+    It would require a decent amount of revision. However, Pulumi specific options are unable to be passed currently so protect or retainOnDelete can not be added to resources. This is... less than ideal.
+
+- Extra CRDs aren't installed by default and currently have no mechanism to install them
+- There *must* be a way to declare duplicate resources in the same config group. Otherwise we create massive bloat without purpose. Config file resources or certificates being individually declarable several times is NOT a bad thing. This would provide greater fluidity. We still need to refine the multi-resource deployment, but certificates is a good start with the direction that should take.
+- Should also revise default-fn to recursively call certificate and just allow the default-fn to unwind the values.
+- Component spec really needs to be moved out of stack_processor as it is just such a large block of data that so better belongs w/ the providers themselves.
 - Currently, certificates relies upon a prior step existing and that in itself is a bit of an anti-pattern... So in the future our options NEED some way of informing the resolver and deployer that it has custom execution.
     ```
     :k8s:certificates
