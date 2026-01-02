@@ -11,3 +11,5 @@
 init-secrets.json
 .crd2pulumi-checksum
 /.clj-kondo/
+.clerk/
+.cpcache
