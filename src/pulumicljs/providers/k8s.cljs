@@ -68,6 +68,20 @@
                    :backendRefs [{:name app-name
                                   :port 80}]}]}})
 
+
+(defn tcproute [{:keys [app-name app-namespace host]}]
+  {:apiVersion "gateway.networking.k8s.io/v1"
+   :kind "TCPRoute"
+   :metadata {:name (str app-name "-route")
+              :namespace app-namespace}
+   :spec {:parentRefs [{:name "main-gateway"
+                        :namespace "traefik"}]
+          :hostnames [host]
+          :rules [{:matches [{:path {:type "PathPrefix"
+                                     :value "/"}}]
+                   :backendRefs [{:name app-name
+                                  :port 80}]}]}})
+
 (defn pvc [{:keys [app-name app-namespace size storage-class access-mode]}]
   {:apiVersion "v1"
    :kind "PersistentVolumeClaim"
@@ -142,6 +156,7 @@
    :gateway      gateway
    :gateway-class  gateway-class
    :httproute    httproute
+   :tcproute tcproute
    :certificate certificate
    :cluster-issuer cluster-issuer
    :chart         chart
