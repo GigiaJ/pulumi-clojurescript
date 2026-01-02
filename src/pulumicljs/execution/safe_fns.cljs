@@ -48,5 +48,6 @@
    'make-listeners make-listeners
    'parse #(js->clj (js/JSON.parse %))
    'stringify #(js/JSON.stringify (clj->js %))
+   'conj #(conj %1 %2)
    'clj->js #(clj->js %)
    })
