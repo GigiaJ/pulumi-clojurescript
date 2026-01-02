@@ -14,7 +14,13 @@ I'll detail more later (check my config README if you're desperate to get this a
 
 
 
+# Notebooks
+Currently using a fairly novel tool for Clojure interactive notebooks called Clerk (https://github.com/nextjournal/clerk/tree/main?tab=readme-ov-file).
+Clerk provides a more responsive environment to actually perform streamlined literate programming. It's helpful here since much of the library isn't actually the Pulumi behavior, but shaping the code to easily meld in a manner Pulumi will accept. In that regard, it should help shield us from binding too heavily to JS too. Since we'll be trying to isolate as much Pulumi-specific behavior away from the library itself.
+It'll also help in actually designing this to be more cohesive and better planned. Ideally, being as close as an official solution for IaC and showcasing the elegant use of lisp in creating tools that developers can expand on and consume.
 
+So with that, running Clerk isn't particularly hard, and eventually you'll be able to sample the library behavior in a "testable" manner through the notebook.
+Currently, just run `clj -X user/start!` and clerk will initialize. I'll expand on this as I go further in developing this to be a more complete "product".
 
 
 
