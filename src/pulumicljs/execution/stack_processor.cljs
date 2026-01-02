@@ -157,6 +157,10 @@
    :k8s:httproute {:constructor (.. gateway-api -v1 -HTTPRoute)
                    :provider-key :k8s
                    :defaults-fn (fn [env] ((get-in default/defaults [:k8s :httproute]) (:options env)))}
+   
+   :k8s:tcproute {:constructor (.. gateway-api -v1alpha2 -TCPRoute)
+                   :provider-key :k8s
+                   :defaults-fn (fn [env] ((get-in default/defaults [:k8s :tcproute]) (:options env)))}
 
    :k8s:cluster-issuer {:constructor (.. cert-manager -v1 -ClusterIssuer)
                         :provider-key :k8s
