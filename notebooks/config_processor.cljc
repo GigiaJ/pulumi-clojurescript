@@ -1,15 +1,15 @@
-(ns notebooks.config-processor
+(ns config-processor
   (:require
    [clojure.string :as str]
    [clojure.walk :as walk]
-   [notebooks.safe-fns :refer [safe-fns]]
-   [notebooks.sidebar :as sidebar]
+   [safe-fns :refer [safe-fns]]
+   ;;[sidebar :as sidebar]
    [nextjournal.clerk :as clerk]
    ))
 
 
-^{::clerk/visibility {:code :hide :result :show}}
-sidebar/sidebar
+;;^{::clerk/visibility {:code :hide :result :show}}
+;;sidebar/sidebar
 
 ^{::clerk/visibility {:code :hide :result :hide}}
 (defn is-output? [_])

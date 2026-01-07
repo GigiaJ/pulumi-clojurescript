@@ -1,5 +1,5 @@
 {:nextjournal.clerk/visibility {:code :hide :result :hide}}
-(ns notebooks.sidebar
+(ns sidebar
   (:require [nextjournal.clerk :as clerk]))
 
 {:nextjournal.clerk/visibility {:code :hide :result :hide}}
@@ -16,8 +16,8 @@
     [:div.custom-sidebar.prose
      [:h3.mt-0 "Library"]
      [:ul.pl-4
-      (for [[label href] links]
-        [:li [:a {:href href :class "text-blue-600 hover:underline"} label]])]
+      (doall (for [[label href] links]
+        [:li [:a {:href href :class "text-blue-600 hover:underline"} label]]))]
 
      [:div.mt-8.text-sm.text-gray-500
       "Status: " [:span.text-green-600 "● Online"]]]]))
@@ -25,5 +25,5 @@
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
 (def sidebar
   (nav-sidebar
-   [["Home" "home"]
-    ["Config Processor" "config_processor"]]))
+   [["Home" 'home]
+    ["Config Processor" 'config_processor]]))

@@ -1,8 +1,8 @@
-(ns notebooks.safe-fns
+(ns safe-fns
   (:require
    [clojure.string :as str]
    [clojure.walk :as walk]
-   [notebooks.sidebar :as sidebar]
+  ;; [sidebar :as sidebar]
    [nextjournal.clerk :as clerk]
    #?(:cljs ["@pulumi/pulumi" :as pulumi]))
   #?(:clj (:import [java.util Base64])))
