@@ -21,7 +21,7 @@ jobs:
           java-version: '21'
 
       - name: Setup Clojure
-        uses: DeLaGuardo/setup-clojure@v12
+        uses: DeLaGuardo/setup-clojure@master
         with:
           cli: 'latest'
 
