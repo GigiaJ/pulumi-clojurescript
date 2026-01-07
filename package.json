@@ -20,5 +20,8 @@
     "pulumi-extra-crds": "1.0.18",
     "punycode": "2.1.1",
     "uuid": "13.0.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.1.18"
   }
 }
