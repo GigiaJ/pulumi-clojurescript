@@ -14,3 +14,4 @@ init-secrets.json
 .clerk/
 .cpcache
 /public
+/docs

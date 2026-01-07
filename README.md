@@ -22,7 +22,17 @@ It'll also help in actually designing this to be more cohesive and better planne
 So with that, running Clerk isn't particularly hard, and eventually you'll be able to sample the library behavior in a "testable" manner through the notebook.
 Currently, just run `clj -X user/start!` and clerk will initialize. I'll expand on this as I go further in developing this to be a more complete "product".
 
+To run the static serve build:
+```
 
+```
+
+Then to test that local:
+```
+npx http-server public
+```
+
+This build is deployed to Github in our pages via actions workflow, so to see the literate programming progress you can easily access them there.
 
 
 
