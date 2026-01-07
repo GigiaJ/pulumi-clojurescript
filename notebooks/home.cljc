@@ -4,6 +4,7 @@
    [clojure.java.io :as io]
    [sidebar :as sidebar]
    [nextjournal.clerk :as clerk]))
+^{::clerk/visibility {:code :hide :result :show}}
 sidebar/sidebar
 (clerk/html [:style "header { display: none !important; }"])
 

@@ -15,6 +15,7 @@
         (println "Building site with:" valid-files)
         (clerk/build!
          {:paths ["notebooks/*"]
+          :index "notebooks/home.cljc"
           :out-path "public"
           :compile-css false}))
       (println "ERROR: No valid notebook files found."))))
