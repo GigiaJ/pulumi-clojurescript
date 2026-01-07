@@ -17,13 +17,10 @@
      [:h3.mt-0 "Library"]
      [:ul.pl-4
       (doall (for [[label href] links]
-        [:li [:a {:href href :class "text-blue-600 hover:underline"} label]]))]
-
-     [:div.mt-8.text-sm.text-gray-500
-      "Status: " [:span.text-green-600 "● Online"]]]]))
+        [:li [:a {:href (str "../../" href) :class "text-blue-600 hover:underline"} label]]))]]]))
 
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
 (def sidebar
   (nav-sidebar
-   [["Home" 'home]
-    ["Config Processor" 'config_processor]]))
+   [["Home" "home"]
+    ["Config Processor" "config_processor"]]))

@@ -3,10 +3,13 @@
    [clojure.string :as str]
    [clojure.walk :as walk]
    [safe-fns :refer [safe-fns]]
-   ;;[sidebar :as sidebar]
+   [sidebar :as sidebar]
    [nextjournal.clerk :as clerk]
    ))
 
+
+^{::clerk/visibility {:code :hide :result :show}}
+sidebar/sidebar
 
 ^{::clerk/visibility {:code :hide :result :hide}}
 (defn is-output? [_])
