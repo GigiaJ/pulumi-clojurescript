@@ -25,5 +25,5 @@
 {:nextjournal.clerk/visibility {:code :hide :result :show}}
 (def sidebar
   (nav-sidebar
-   [["Home" "notebooks/home"]
-    ["Config Processor" "notebooks/config_processor"]]))
+   [["Home" "src/notebooks/home"]
+    ["Config Processor" "src/notebooks/config_processor"]]))
