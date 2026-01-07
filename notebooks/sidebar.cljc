@@ -9,7 +9,7 @@
   (let [path (-> (.getPath file)
                  (str/replace #"\.(cljc|clj)$" "")
                  (str/replace #"-" "_")
-                 (as-> $ (str "/pulumi-clojurescript/" $)))
+                 (as-> $ (str "pulumi-clojurescript/" $)))
         
         name (-> (.getName file)
                  (str/replace #"\.(cljc|md)$" "")
