@@ -8,9 +8,6 @@
    ))
 
 
-;;^{::clerk/visibility {:code :hide :result :show}}
-;;sidebar/sidebar
-
 ^{::clerk/visibility {:code :hide :result :hide}}
 (defn is-output? [_])
 ^{::clerk/visibility {:code :hide :result :hide}}

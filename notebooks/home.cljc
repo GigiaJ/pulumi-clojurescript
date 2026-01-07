@@ -4,7 +4,7 @@
    [clojure.java.io :as io]
    ;;[sidebar :as sidebar]
    [nextjournal.clerk :as clerk]))
-;;sidebar/sidebar
+
 (clerk/html [:style "header { display: none !important; }"])
 
 ;; ## Pulumi-CLJS library notebook
