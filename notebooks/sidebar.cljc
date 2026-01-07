@@ -8,7 +8,8 @@
 (defn file->nav-item [file]
   (let [path (-> (.getPath file)
                  (str/replace #"\.(cljc|clj)$" "")
-                 (str/replace #"-" "_"))
+                 (str/replace #"-" "_")
+                 (as-> $ (str "/pulumi-clojurescript/" $)))
         
         name (-> (.getName file)
                  (str/replace #"\.(cljc|md)$" "")
@@ -17,7 +18,7 @@
     {:path path :name name}))
 
 (def notebooks
-  (let [home-file {:path (if (= "production" (System/getProperty "CLERK_ENV")) "././././././././././././././" "notebooks/home") :name "Home"}
+  (let [home-file {:path (if (= "production" (System/getProperty "CLERK_ENV")) "pulumi-clojurescript/./././././././././././././" "pulumi-clojurescript/") :name "Home"}
         scanned (->> (file-seq (io/file "notebooks"))
                      (filter #(re-find #"\.(cljc|clj|md)$" (.getName %)))
                      (remove #(= "home.cljc" (.getName %)))
