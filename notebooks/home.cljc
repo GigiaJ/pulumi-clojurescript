@@ -2,10 +2,13 @@
 (ns home
   (:require
    [clojure.java.io :as io]
+   [clojure.string :as str]
    [sidebar :as sidebar]
    [nextjournal.clerk :as clerk]))
 ^{::clerk/visibility {:code :hide :result :show}}
 sidebar/sidebar
+
+
 (clerk/html [:style "header { display: none !important; }"])
 
 ;; ## Pulumi-CLJS library notebook

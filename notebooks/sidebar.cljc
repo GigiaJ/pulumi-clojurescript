@@ -1,42 +1,53 @@
-{:nextjournal.clerk/visibility {:code :hide :result :hide}}
+{:nextjournal.clerk/visibility {:code :hide :result :show}}
 (ns sidebar
   (:require
    [clojure.string :as str]
+   [clojure.java.io :as io]
    [nextjournal.clerk :as clerk]))
 
-;; Clerk has a bug where the set index.html makes it virtually impossible to create a crisp subpath experience without fixing the path
-(defn fix-path [href]
-  (if (or (= href "home") (= href "home.cljc"))
-    "../../"
-    (let [clean-slug (-> href
-                         (clojure.string/replace #"^/+" "")
-                         (clojure.string/replace #"^notebooks/" ""))]
-      (str "/notebooks/" clean-slug))))
+(defn file->nav-item [file]
+  (let [path (-> (.getPath file)
+                 (str/replace #"\.(cljc|clj)$" "")
+                 (str/replace #"-" "_"))
+        
+        name (-> (.getName file)
+                 (str/replace #"\.(cljc|md)$" "")
+                 (str/replace #"_" " ")
+                 str/capitalize)]
+    {:path path :name name}))
 
+(def notebooks
+  (let [home-file {:path (if (= "production" (System/getProperty "CLERK_ENV")) "././././././././././././././" "notebooks/home") :name "Home"}
+        scanned (->> (file-seq (io/file "notebooks"))
+                     (filter #(re-find #"\.(cljc|clj|md)$" (.getName %)))
+                     (remove #(= "home.cljc" (.getName %)))
+                     (map file->nav-item))]
 
-(defn corrected-links [links]
-  (for [[label href] links]
-    [:li
-     [:a {:href (fix-path href)
-          :class "block text-blue-600 hover:underline"}
-      label]]))
+    (cons home-file scanned)))
 
-(defn nav-sidebar [links]
-  (clerk/html
-   [:div
-    [:style "
-     .custom-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 16rem; padding: 1.5rem; border-right: 1px solid #e5e7eb; background: white; z-index: 50; overflow-y: auto; }
-     .viewer-notebook { margin-left: 16rem !important; max-width: calc(100% - 16rem) !important; }
-     @media (max-width: 1024px) { .custom-sidebar { display: none; } .viewer-notebook { margin-left: auto !important; max-width: 100% !important; } }
-     "]
+(def sidebar (clerk/html
+ [:div
+  [:style "
+    .clerk-sidebar { 
+      position: fixed; top: 0; left: 0; bottom: 0; 
+      width: 260px; background: #1a202c; color: white;
+      padding: 24px; font-family: sans-serif;
+      z-index: 100; border-right: 1px solid #2d3748;
+    }
+    .clerk-main { margin-left: 260px; padding: 40px; max-width: 800px; }
+    .nav-link { 
+      display: block; padding: 10px 14px; color: #cbd5e0; 
+      text-decoration: none; border-radius: 6px; margin-bottom: 6px;
+      transition: all 0.2s;
+    }
+    .nav-link:hover { background: #2d3748; color: #fff; }
+    header { display: none !important; }
+  "]
 
-    [:div.custom-sidebar.prose
-     [:h3.mt-0 "Library"]
-     [:ul.pl-4
-      (corrected-links links)]]]))
+  [:div.clerk-sidebar
+   [:h2.text-sm.font-semibold.uppercase.tracking-wider.text-gray-500.mb-4 "Notebooks"]
+   [:nav
+    (map (fn [{:keys [path name]}]
+           [:a.nav-link {:href (clerk/doc-url path)} name])
+         notebooks)]]]))
 
-{:nextjournal.clerk/visibility {:code :hide :result :show}}
-(def sidebar
-  (nav-sidebar
-   [["Home" "home"]
-    ["Config Processor" "config_processor"]]))

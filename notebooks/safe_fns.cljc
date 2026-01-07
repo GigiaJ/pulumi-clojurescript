@@ -2,10 +2,14 @@
   (:require
    [clojure.string :as str]
    [clojure.walk :as walk]
-  ;; [sidebar :as sidebar]
+   [sidebar :as sidebar]
    [nextjournal.clerk :as clerk]
    #?(:cljs ["@pulumi/pulumi" :as pulumi]))
   #?(:clj (:import [java.util Base64])))
+^{::clerk/visibility {:code :hide :result :show}}
+sidebar/sidebar
+
+
 
 (defn b64e [s]
   #?(:cljs (.toString (js/Buffer.from s) "base64")
