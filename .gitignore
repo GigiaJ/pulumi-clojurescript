@@ -13,3 +13,4 @@ init-secrets.json
 /.clj-kondo/
 .clerk/
 .cpcache
+/public
