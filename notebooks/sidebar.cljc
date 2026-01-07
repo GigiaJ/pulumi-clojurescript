@@ -17,7 +17,7 @@
     {:path path :name name}))
 
 (def notebooks
-  (let [home-file {:path (if (= "production" (System/getProperty "CLERK_ENV")) "pulumi-clojurescript/./././././././././././././" "pulumi-clojurescript/") :name "Home"}
+  (let [home-file {:path "/" :name "Home"}
         scanned (->> (file-seq (io/file "notebooks"))
                      (filter #(re-find #"\.(cljc|clj|md)$" (.getName %)))
                      (remove #(= "home.cljc" (.getName %)))
