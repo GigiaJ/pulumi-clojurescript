@@ -41,4 +41,4 @@ sidebar/sidebar
 ;; templates/examples provided alongside helpful diagram.
 ;; Alongside the processors and definitions we have Composable Provider Templates, Resource Definition Templates, and a generic set of utility functions for the library.
 
-(clerk/image (io/file "https://raw.githubusercontent.com/GigiaJ/pulumi-clojurescript/refs/heads/master/resources/images/library-outline.png"))
+(clerk/image  "https://raw.githubusercontent.com/GigiaJ/pulumi-clojurescript/refs/heads/master/resources/images/library-outline.png")
