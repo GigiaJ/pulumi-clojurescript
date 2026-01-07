@@ -6,8 +6,6 @@
    [nextjournal.clerk :as clerk]
    #?(:cljs ["@pulumi/pulumi" :as pulumi]))
   #?(:clj (:import [java.util Base64])))
-^{::clerk/visibility {:code :hide :result :show}}
-sidebar/sidebar
 
 
 

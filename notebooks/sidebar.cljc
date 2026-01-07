@@ -1,4 +1,4 @@
-{:nextjournal.clerk/visibility {:code :hide :result :show}}
+{:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (ns sidebar
   (:require
    [clojure.string :as str]
