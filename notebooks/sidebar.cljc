@@ -8,8 +8,7 @@
 (defn file->nav-item [file]
   (let [path (-> (.getPath file)
                  (str/replace #"\.(cljc|clj)$" "")
-                 (str/replace #"-" "_")
-                 (as-> $ (str "pulumi-clojurescript/" $)))
+                 (str/replace #"-" "_"))
         
         name (-> (.getName file)
                  (str/replace #"\.(cljc|md)$" "")
