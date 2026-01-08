@@ -166,6 +166,8 @@
     (:results final-state)))
 
 ;; and running that produces
+^{::clerk/auto-expand-results? true}
+^{::clerk/visibility {:code :show :result :show}}
 (run-simulation test-config {:app-name "harbor"})
 
 ;; With that we can be conclusive that at least in our simulation (using Clojure)
