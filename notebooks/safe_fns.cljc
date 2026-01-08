@@ -4,7 +4,7 @@
    [clojure.walk :as walk]
    [sidebar :as sidebar]
    [nextjournal.clerk :as clerk]
-   #?(:cljs ["@pulumi/pulumi" :as pulumi]))
+   [pulumi :as pulumi])
   #?(:clj (:import [java.util Base64])))
 
 
