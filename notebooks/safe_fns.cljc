@@ -10,21 +10,23 @@
 
 
 (defn b64e [s]
-  #?(:cljs (.toString (js/Buffer.from s) "base64")
-     :clj  (.encodeToString (Base64/getEncoder) (.getBytes s "UTF-8"))))
+  #?(:cljs (.toString (js/Buffer.from (if (string? s) s (clj->js s))) "base64")
+      :clj  (if (instance? pulumi.MockOutput s)
+              s
+              (.encodeToString (Base64/getEncoder) (.getBytes (str s) "UTF-8")))))
 
 (defn log [msg]
   #?(:cljs (js/console.log msg)
      :clj  (println msg)))
 
 (defn make-paths [& path-groups]
-  (mapcat (fn [{:keys [paths backend]}]
+  (vec (mapcat (fn [{:keys [paths backend]}]
             (mapv (fn [p]
                     {:path p
                      :pathType "Prefix"
                      :backend {:service backend}})
                   paths))
-          path-groups))
+          path-groups)))
 
 (def ^:public safe-fns
   {'str       str
