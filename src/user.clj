@@ -5,6 +5,18 @@
             [viewers :as viewers]))
 
 
+(when-not (resolve 'clojure.core/clj->js)
+  (intern 'clojure.core 'clj->js
+          (fn [x]
+            (clojure.walk/stringify-keys x))))
+
+(when-not (resolve 'clojure.core/js->clj)
+  (intern 'clojure.core 'js->clj
+          (fn [x & [opts]]
+            (let [{:keys [keywordize-keys]} (if (map? opts) opts (apply hash-map opts))]
+              (if keywordize-keys
+                (clojure.walk/keywordize-keys x)
+                x)))))
 
 ^{::clerk/visibility {:code :hide :result :hide}}
 (defn start! [_]
