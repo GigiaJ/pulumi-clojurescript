@@ -1,11 +1,13 @@
 (ns general
   (:require 
+   [pulumicljs.providers.defaults :refer [library]]
    [clojure.test :refer [deftest is run-tests]]
    [clojure.data :refer [diff]]
    [clojure.repl :refer [source-fn]]
+   [provider-template :as provider-template]
    [nextjournal.clerk :as clerk]
-   [provider-template :refer [config-map storage-class]]
-   [pulumicljs.utils.general :refer [defregistry]]))
+   [pulumicljs.utils.general :refer [defregistry]]
+   ))
 
 ;; So a part of how the providers work is through what we call a registry.
 ;; The registry could be crafted manually, but it is clunky and verbose.
@@ -21,13 +23,17 @@
 ;; Now the registry entries themselves can't be entirely auto-generated
 ;; As the application has no way of knowing the true path to the constructor,
 ;; and you may wish to modify the default function even.
-^{::clerk/auto-expand-results? true}
+;;^{::clerk/auto-expand-results? true}
+
+
+
 (defregistry provider-template-registry 
   {:provider-template {:provider-key :provider-template
                                  :resources
-                                 {:config-map {:path [-here -lives -TheConstructor]
+                                 {:example {:path [-here -lives -TheConstructor]
                                                :defaults-fn #(println %)}
-                                  :storage-class {:path [-core -v1 -StorageClass]}}}})
+                                  :storage-class {:path [-core -v1 -StorageClass]
+                                                  :defaults-fn #(println %)}}}})
 
 
 
@@ -36,3 +42,4 @@
 ^{::clerk/visibility {:code :hide :result :show}}
 (clerk/code (source-fn 'pulumicljs.utils.general/coerce-value))
 
+library
