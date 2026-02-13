@@ -33,6 +33,6 @@
 (defn new-resource [constructor-path resource-name resource-opts pulumi-opts]
   #?(:cljs (new constructor-path resource-name (clj->js resource-opts) (clj->js pulumi-opts))
      :clj {:constructor-path (str constructor-path)
-           :name resource-name
-           :props resource-opts
-           :opts pulumi-opts}))
+           :resource-name resource-name
+           :resource-opts resource-opts
+           :pulumi-opts pulumi-opts}))
