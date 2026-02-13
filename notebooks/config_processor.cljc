@@ -1,14 +1,16 @@
+
 ^{:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (ns config-processor
   (:require
    [clojure.test :refer [deftest is run-tests]]
    [clojure.data :refer [diff]]
+   [clojure.string :as str]
    [clojure.repl :refer [source-fn]]
    [nextjournal.clerk :as clerk]
    [viewers :as v]
-   [pulumicljs.utils.pulumi :as pulumi]
+   [pulumicljs.processors.stack-processor :as sproc]
+  [pulumicljs.utils.pulumi :as pulumi]
    [pulumicljs.utils.general :refer [deep-merge p->]]
-
    [pulumicljs.processors.config-processor :as proc]
    [general :refer [provider-template-registry]]))
 
@@ -231,25 +233,18 @@
 ;; It may prove worthwhile to try to see the about creating the path with the least friction then.
 ;; Seeing as Pulumi is the ONLY part that needs the values as JS objects... we can instead try to ensure
 ;; Everything FROM Pulumi is returned in Clojurescript and every call TO Pulumi is auto-converted to JS
-^{::clerk/visibility {:code :show :result :hide}}
-(defn generic-transform
-  "Takes a creator function and executes it with resolved arguments,
-   handling asynchronicity when secrets are present."
-  [creator-fn opts base-values options]
-  (pulumi/apply-output options
-                       #(creator-fn (deep-merge base-values (proc/resolve-template opts %)))))
+^{::clerk/visibility {:code :hide :result :show}}
+;;(clerk/code (source-fn 'sproc/generic-transform))
 
-(generic-transform (fn [args] args)  {:app-name "cats"} {:silly-hands {}} {:provider-template:storage-class {}})
+;; generic-transform
 
-;; We need to define how an individual resource (the individual resources that comprise this resource's steps) 
+;; We need to define how an individual resource (the individual resources that comprise this resource's steps)
 ;; in the Resource Config Definition
 ;; in order to actually provide some dynamic options later, we'll use a multi-method that handles the registered
 ;; components specs.
-(defmulti deploy-resource
-  "Generic resource deployment multimethod.
-  Dispatches on the fully-qualified resource keyword.
-  Returns a map of {:resource (the-pulumi-resource) :common-opts-update {map-of-new-state}}."
-  (fn [dispatch-key _config] dispatch-key))
+;;(clerk/code (source-fn 'pulumicljs.processors.stack-processor/deploy-resource))
+;; deploy-resource #base
+
 
 ;; We'll define our component specs here with just a single provider for testing config execution
 ^{::clerk/visibility {:code :show :result :show}
@@ -257,11 +252,29 @@
 (def component-specs provider-template-registry)
 
 ;; We should also make a simpler test-config for now until we finish our provider design
-(def test-config-2 {:app-name "test"
-                    :stack [{:provider-template:storage-class {:app-name 'app-name
+(def test-config-2 {:app-name "test-config"
+                    :stack [{:alias "alias-1"
+                             :provider-template:storage-class {:app-name 'app-name
                                                                :app-namespace 'app-name
-                                                               :random-setting "something"}
-                             :pulumi-options {:safe {}}}]})
+                                                               :random-setting "something"
+                                                               :root-level {:next-level {:lowest-value "test"}}}
+                             :pulumi-options {:safe {}}}
+                            {:alias "alias-2"
+                             :provider-template:storage-class {:app-name 'app-name
+                                                               :app-namespace 'app-name
+                                                               :random-setting "something"
+                                                               :deep-props {:another-prop "value"
+                                                                            :deeper-props {:deepest-prop "testing"}}}
+                             :pulumi-options {:safe {}}}
+                            {:alias "alias-3"
+                             :provider-template:storage-class {:app-name 'app-name
+                                                               :app-namespace 'app-name
+:prior-step-check {}
+                                                               :random-setting "something"
+                                                               :deep-props {:another-prop "value"
+                                                                            :deeper-props {:deepest-prop "testing"}}}
+                             :pulumi-options {:safe {}}}
+                            ]})
 
 ;; and the deploy-resource default function here
 ;; now it should be able to simply pick out the keys from the config itself that has been parsed earlier
@@ -276,146 +289,62 @@
 ;; Starting the conversion of the old deploy resource function. Since the actual process is convoluted
 ;; We'll instead start with the higher-order functions before this.
 ;; Including sorting our solution for provider organization and loading.
-(defmethod deploy-resource :default
-  [dispatch-key full-config]
-  #_(if-let [spec (get component-specs dispatch-key)]
-      (let [app-name       (:app-name full-config)
-            dependsOn      (:dependsOn full-config)
-            provider-key   (:provider-key spec)
-            provider       (get full-config provider-key)
-            resource-class (:constructor spec)
-
-            opts-key       (keyword (str (name dispatch-key) "-opts"))
-
-
-            component-opts (get full-config opts-key)
-
-            env            {:options full-config :secrets (:secrets full-config) :component-opts component-opts}
-
-            raw-defaults   (when-let [df (:default-fn spec)] (df env))]
-
-        (if resource-class
-          (let [base-creator (fn [final-args suffix]
-                               (let [final-name (if suffix
-                                                  (str app-name "-" suffix)
-                                                  app-name)]
-                                 (pulumi/new-resource resource-class
-                                                      final-name
-                                                      final-args
-                                                      {provider
-                                                       dependsOn})))]
-            {:resource
-             (p-> raw-defaults
-                  #(let [defaults-list (if (vector? %)
-                                         %
-                                         [%])
-                         is-multi?     (vector? %) resources
-                         (doall
-                          (map-indexed
-                           (fn [idx item]
-                             (let [suffix (cond
-                                            (:_suffix item) (:_suffix item)
-                                            is-multi? (str idx)
-                                            :else nil)
-                                   clean-item (dissoc item :_suffix)
-                                   item-creator (fn [resolved-args]
-                                                  (base-creator resolved-args suffix))
-                                   _ (println item-creator)]
-
-                               (generic-transform item-creator
-                                                  component-opts
-                                                  clean-item
-                                                  full-config)))
-                           defaults-list))]
-                     (if is-multi? resources (first resources))))})
-
-          (throw (ex-info (str "No :constructor found for spec: " dispatch-key) {:dispatch-key dispatch-key
-                                                                                 :type :missing-constructor}))))
-
-      (throw (ex-info (str "Unknown resource: " dispatch-key) {:dispatch-key dispatch-key}))))
-
+^{::clerk/visibility {:code :show :result :show}}
+;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/deploy-resource))
+;; deploy-resource #default
 
 ;; Simple little helper function
 ;; Just using it to merge to the inner of the resource step map and associate
 ;; depends on to pulumi options
-(defn merge-into-stack-entry
-  [obj target-key merge-path merge-map]
-  (let [stack (:stack obj)
-        idx   (some (fn [[i m]]
-                      (when (contains? m target-key)
-                        i))
-                    (map-indexed vector stack))]
-    (if (nil? idx)
-      obj
-      (update-in obj (into [:stack idx] merge-path)
-                 merge merge-map))))
+
+;; merge-into-stack-entry
+;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/merge-into-stack-entry))
+
 
 ;; Simplify the merging...
 ;; However, in doing this we still fail to address the actual uniqueness where duplicates
 ;; can cause issue (since depends-on seems too simplistic)
-;; Certainly might be tired though, so I'll revisit this also in the morning.
-(defn handle-keyword-item [last-resource dispatch-key final-config common-opts]
-  (let [deploy-config (merge-into-stack-entry
-                       final-config
-                       :provider-template:storage-class
-                       [:pulumi-options]
-                       {:depends-on (cond-> []
-                                      last-resource (conj last-resource)
-                                      (:depends-on final-config) (into (:depends-on final-config)))})
+;; Something to consider as well, is that the actual dependsOn should be an empty array if there is no dependency
+;; provided to it. This is because pulumi will not create a dependency if it is not provided. However,
+;; we don't wish to restrict the actual ability to create inter-dependency (if possible to provide it).
+;; I suspect that might not be entirely feasible if the goal was to link to config entries from other stack's
+;; or from other config definitions.
+;; That said we want to more or less encapsulate the actual logic related to passing off to the
+;; "execute" or "deploy" method here. So any combinations of data for example to build out that
+;; passed off "config" is here.
+
+;; handle-keyword-item
+;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/handle-keyword-item))
 
 
-        result-map    (deploy-resource dispatch-key deploy-config)
-        resource      (:resource result-map)]
+;; For proper behavior we need to check in advance for duplicates as we execute and need information sequentially (no transducers for us sadly)
+;; Since we do so, we'll prepare a method that checks for duplication and provides an easy and meaningful way to access the resource configuration
+;; later
 
-    [resource
-     nil
-     (merge common-opts (:common-opts-update result-map))]))
-
-
-;; Have not touched this yet.
-(defn handle-list-item [last-resource item config common-opts]
-  (let [provider-key (first item)
-        resource-keys (rest item)
-
-        nested-result
-        (reduce
-         (fn [nested-acc resource-key]
-           (let [inner-last-resource (get nested-acc :last-resource)
-                 inner-resources-map (get nested-acc :resources)
-                 inner-common-opts   (get nested-acc :common-opts)
-                 dispatch-key (keyword (str (name provider-key) ":" (name resource-key)))
-                 [new-resource new-resource-map new-common-opts]
-                 (handle-keyword-item inner-last-resource dispatch-key config inner-common-opts)]
-             {:last-resource (or new-resource inner-last-resource)
-              :resources     (merge inner-resources-map new-resource-map)
-              :common-opts   new-common-opts}))
-         {:last-resource last-resource
-          :resources     {}
-          :common-opts   common-opts}
-
-         resource-keys)]
-
-    [(:last-resource nested-result)
-     (:resources nested-result)
-     (:common-opts nested-result)]))
+;; get-item-type
+;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/get-item-type))
 
 
-;; This made me start thinking about using the Clojure feature 'spec'
-;; I'll probably revisit a lot of this and better define using spec
-(defn derive-identity [type-kw config resources-map]
-  (let [user-alias (:alias config)
-        resource-name (or (:name config) (get-in config [:metadata :name]))
-        default-key type-kw]
+;; We need to have a consistent way to dispatch over a set of config
+;; entries. This shoud realistically just be a fancy iterator
+;; with the underlying logic being passed off to the handle-keyword-item
+;; for actual 'processing' and the returned up to the inaptly named
+;; parent method.
 
-    (cond
-      user-alias user-alias
-      (contains? resources-map default-key)
-      (if resource-name
-        (keyword (name type-kw) (str resource-name))
-        (throw (ex-info (str "Duplicate resource type " type-kw " detected. "
-                             "Please provide an :alias or a :name.")
-                        {:type type-kw :config config})))
-      :else default-key)))
+;; handle-list-item
+;;(clerk/code (source-fn 'pulumicljs.processors.stack-processor/handle-list-item))
+
+
+;; This made me start thinking about using the Clojure records
+;; This will be fine for now. So we do need to count the number of duplicates
+;; That exist within a config set. Once we do we then want to actually check
+;; To see if they have aliases. If there are duplicates for a resource-type
+;; They must be validated to have an alias or return an error back to the
+;; user. In order to prevent an improper later resource reference
+;; To the output of a Pulumi execution
+
+;; derive-identity
+;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/derive-identity))
 
 
 ;; Going to slowly work out which parts we can peel away and simplify
@@ -423,49 +352,49 @@
 ;; It'll likely make more sense to simply define the problem and map it out, but
 ;; we spent a chunk of time just writing out provider templating, so this was
 ;; a bit more rushed.
-(defn process-stack [stack-items config initial-common-opts]
-  (reduce
-   (fn [acc item]
-     (let [{:keys [last-resource resources-map common-opts]} acc]
 
-       (cond
-         (vector? item)
-         (let [[new-res new-map new-opts]
-               (handle-list-item last-resource item config common-opts)]
-           {:last-resource (or new-res last-resource)
-            :resources-map (merge resources-map new-map)
-            :common-opts   new-opts})
-         :else
-         (let [[type-kw specific-config]
-               (cond
-                 (keyword? item) [item {}]
-                 (map? item)     (first item)
-                 :else (throw (ex-info "Unknown item" {:item item})))
-
-               storage-key (derive-identity type-kw specific-config resources-map)
-               _ (reset! debug-log [])
-               _ (swap! debug-log conj storage-key)
-               [new-res _ result-opts] 
-               (handle-keyword-item last-resource
-                                    type-kw
-                                    config
-                                    common-opts)]
-
-           {:last-resource (or new-res last-resource)
-            :resources-map (assoc resources-map storage-key new-res)
-            :common-opts   (merge common-opts result-opts)}))))
-   {:last-resource nil :resources-map {} :common-opts initial-common-opts}
-   stack-items))
+;; process-stack
+;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/process-stack))
 
 
+;; We can now see that template resolution is occurring and thus
+;; symbols can be seen with their evaluated value below
 ^{::clerk/visibility {:code :show :result :show}
   ::clerk/auto-expand-results? true}
-(process-stack (:stack test-config-2) test-config-2 (select-keys test-config-2 [:app-name :app-namespace]))
+;;(def processed-stack (pulumicljs.processors.stack_processor/process-stack (:stack test-config-2) test-config-2 (select-keys test-config-2 [:app-name :app-namespace])))
 
-
-(-> (:resources-map (process-stack (:stack test-config-2) test-config-2 (select-keys test-config-2 [:app-name :app-namespace])))
-    (get :provider-template:storage-class))
-
+;; The final piece we want to ensure is prior step reference expressions are evaluated
+;; and able to used in the next config entry in the config definition.
+;; Additionally, testing alias accessing is useful here.
+;; So immediately we notice, we haven't  *given* a direct way to back reference prior steps
+;; Inherently it isn't unable, but it does lack even an object passed to the individual deploy-resource
+;; item that provides the context of the executed stack at the current moment.
+;; More specifically, because they are "fake" objects they don't have the expected internal structure. So we may wish to adjust the map to be handled properly by the p-> macro.
 ^{::clerk/visibility {:code :show :result :show}
+  ::clerk/auto-expand-results? true}
+;;(p-> processed-stack :resources-map "alias-2" :resource-opts :deep-props :deeper-props :deepest-prop)
+
+;; We may need to investigate further on the cross platform behavior of get
+;; on string accessors to an array as prior we were using aget.
+;; However, aget will not work on a Clojure map. Since our Clojure tests operate
+;; against Clojure we need to make the code portable.
+;; I leave this a note on this if I have to return to fix that macro behavior
+
+
+;; Now the next piece is decoupling the component specs being baked into stack processor.
+;; These should instead be passed (and thusly easily mutable and loadable).
+;; This allows users to engage in much more dynamic and fluid consumption of providers
+;; As we can actually centralize their loading and thus allow Clojure to consume their
+;; Code as data.
+
+
+
+^{::clerk/visibility {:code :hide :result :hide}
   ::clerk/auto-expand-results? true}
 @debug-log
+
+;; Tests
+ 
+;; Test
+;; dsfjdf
+;; dfadsfda
