@@ -234,7 +234,7 @@
 ;; Seeing as Pulumi is the ONLY part that needs the values as JS objects... we can instead try to ensure
 ;; Everything FROM Pulumi is returned in Clojurescript and every call TO Pulumi is auto-converted to JS
 ^{::clerk/visibility {:code :hide :result :show}}
-;;(clerk/code (source-fn 'sproc/generic-transform))
+(clerk/code (source-fn 'pulumicljs.processors.stack-processor/generic-transform))
 
 ;; generic-transform
 
@@ -291,6 +291,7 @@
 ;; Including sorting our solution for provider organization and loading.
 ^{::clerk/visibility {:code :show :result :show}}
 ;;(clerk/code (source-fn 'pulumicljs.processors.stack_processor/deploy-resource))
+;;(clerk/with-viewer v/multimethod-full-viewer sproc/deploy-resource)
 ;; deploy-resource #default
 
 ;; Simple little helper function
